@@ -405,10 +405,8 @@
     }
     #story-canvas-wrap .sw-g1 { position: absolute; width: 340px; height: 340px; border-radius: 50%; background: radial-gradient(circle, rgba(201,169,110,0.11) 0%, transparent 70%); top: -100px; left: -80px; }
     #story-canvas-wrap .sw-g2 { position: absolute; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(139,124,246,0.09) 0%, transparent 70%); bottom: -30px; right: -50px; }
-    #story-canvas-wrap .sc-head { position: relative; z-index:1; display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
-    #story-canvas-wrap .sc-logo { font-size: 14px; letter-spacing: 3px; color: rgba(201,169,110,0.55); }
-    #story-canvas-wrap .sc-date { font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.18); text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
-    #story-canvas-wrap .sc-badge { position: relative; z-index:1; display: flex; justify-content: center; margin-bottom: 30px; }
+    #story-canvas-wrap .sc-badge { position: relative; z-index:1; display: flex; justify-content: center; margin-bottom: 8px; }
+    #story-canvas-wrap .sc-date { position: relative; z-index:1; text-align: center; font-size: 10px; letter-spacing: 1.5px; color: rgba(255,255,255,0.2); text-transform: uppercase; font-family: 'DM Sans', sans-serif; margin-bottom: 26px; }
     #story-canvas-wrap .sc-badge-inner { display: inline-flex; align-items: center; gap: 7px; background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.22); border-radius: 100px; padding: 6px 18px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(201,169,110,0.85); font-family: 'DM Sans', sans-serif; }
     #story-canvas-wrap .sc-conselho { position: relative; z-index:1; font-size: 22px; font-weight: 300; font-style: italic; line-height: 1.7; color: #EDE8DF; text-align: center; margin-bottom: 24px; }
     #story-canvas-wrap .sc-frase { position: relative; z-index:1; font-size: 16px; font-weight: 400; font-style: italic; color: #C9A96E; line-height: 1.65; text-align: center; margin-bottom: 30px; opacity: 0.92; }
@@ -416,14 +414,14 @@
     #story-canvas-wrap .sc-recs { position: relative; z-index:1; display: flex; gap: 12px; margin-bottom: 0; }
     #story-canvas-wrap .sc-rec { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 14px; }
     #story-canvas-wrap .sc-rec-type { font-size: 10px; color: rgba(255,255,255,0.22); margin-bottom: 5px; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
-    #story-canvas-wrap .sc-rec-val { font-size: 15px; font-weight: 400; color: rgba(237,232,223,0.85); line-height: 1.3; }
+    #story-canvas-wrap .sc-rec-val { font-size: 14px; font-weight: 400; color: rgba(237,232,223,0.85); line-height: 1.3; margin-bottom: 4px; }
+    #story-canvas-wrap .sc-rec-motivo { font-size: 10px; font-style: italic; color: rgba(201,169,110,0.6); line-height: 1.4; }
     #story-canvas-wrap .sc-nums-section { position: relative; z-index:1; margin-top: auto; padding-top: 24px; }
     #story-canvas-wrap .sc-nums-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 12px; text-align: center; font-family: 'DM Sans', sans-serif; }
     #story-canvas-wrap .sc-nums { display: flex; gap: 10px; justify-content: center; }
     #story-canvas-wrap .sc-num { width: 44px; height: 44px; border-radius: 50%; background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.2); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #C9A96E; }
-    #story-canvas-wrap .sc-footer { position: relative; z-index:1; display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
-    #story-canvas-wrap .sc-url { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.15); font-family: 'DM Sans', sans-serif; }
-    #story-canvas-wrap .sc-cta { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(201,169,110,0.45); font-family: 'DM Sans', sans-serif; }
+    #story-canvas-wrap .sc-footer { position: relative; z-index:1; display: flex; align-items: center; justify-content: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+    #story-canvas-wrap .sc-cta { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(201,169,110,0.4); font-family: 'DM Sans', sans-serif; }
 
     /* error */
     .error-box {
@@ -738,13 +736,10 @@ function buildStoryCanvas() {
     <div class="sw-outer">
       <div class="sw-g1"></div>
       <div class="sw-g2"></div>
-      <div class="sc-head">
-        <div class="sc-logo">✦ Astro Hoje</div>
-        <div class="sc-date">${hoje}</div>
-      </div>
       <div class="sc-badge">
         <div class="sc-badge-inner">${signo?.e || '✦'} ${state.signo} · ${humor?.e || ''} ${humor?.l || ''}</div>
       </div>
+      <div class="sc-date">${hoje}</div>
       <div class="sc-conselho">${esc(o.conselho)}</div>
       <div class="sc-frase">"${esc(o.frase)}"</div>
       <div class="sc-rule"></div>
@@ -752,10 +747,12 @@ function buildStoryCanvas() {
         <div class="sc-rec">
           <div class="sc-rec-type">🎬 filme</div>
           <div class="sc-rec-val">${esc(o.filme?.titulo || '')}</div>
+          <div class="sc-rec-motivo">${esc(o.filme?.motivo || '')}</div>
         </div>
         <div class="sc-rec">
           <div class="sc-rec-type">🎵 música</div>
           <div class="sc-rec-val">${esc(o.musica?.titulo || '')}</div>
+          <div class="sc-rec-motivo">${esc(o.musica?.motivo || '')}</div>
         </div>
       </div>
       <div class="sc-nums-section">
@@ -763,8 +760,7 @@ function buildStoryCanvas() {
         <div class="sc-nums">${nums}</div>
       </div>
       <div class="sc-footer">
-        <div class="sc-url">astro-hoje.vercel.app</div>
-        <div class="sc-cta">consulte o seu ✦</div>
+        <div class="sc-cta">astro-hoje.vercel.app &nbsp;·&nbsp; consulte o seu ✦</div>
       </div>
     </div>
   `;
@@ -798,13 +794,13 @@ async function downloadStory() {
     btn.style.background = 'linear-gradient(135deg,#25D366,#1EBE58)';
     setTimeout(() => {
       btn.disabled = false;
-      btn.textContent = '📲  Salvar imagem para stories';
+      btn.textContent = '✦  Card especial para os stories';
       btn.style.background = '';
     }, 3000);
   } catch (err) {
     console.error(err);
     btn.disabled = false;
-    btn.textContent = '📲  Salvar imagem para stories';
+    btn.textContent = '✦  Card especial para os stories';
   }
 }
 
