@@ -3,19 +3,11 @@ const handler = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { signo, aniversario, humor, genero } = req.body;
+  const { signo, aniversario, humor } = req.body;
 
   if (!signo || !humor) {
     return res.status(400).json({ error: 'Signo e humor são obrigatórios' });
   }
-
-  // ── Gênero ──
-  const generoGuide = {
-    'feminino':    'Use concordância gramatical feminina em todo o texto. Ex: "você está pronta", "você é capaz", "seja corajosa". Tom acolhedor e empoderador para mulheres.',
-    'masculino':   'Use concordância gramatical masculina em todo o texto. Ex: "você está pronto", "você é capaz", "seja corajoso". Tom direto e encorajador para homens.',
-    'nao-binario': 'Use linguagem completamente neutra — NUNCA use adjetivos com marcação de gênero (-o/-a). Reescreva as frases para usar substantivos, verbos e construções universais que funcionam para qualquer pessoa. Ex: em vez de "você está pronta/pronto" use "sua energia está em expansão"; em vez de "seja corajosa/corajoso" use "confie na sua força"; em vez de "você é linda/lindo" use "sua presença é luminosa". O texto deve soar natural e poético, sem que se perceba a adaptação. Tom profundamente acolhedor, livre e celebratório.',
-  };
-  const generoInstrucao = generoGuide[genero] || generoGuide['feminino'];
 
   // ── Bloco 1: Era aleatória ──
   const eras = [
@@ -106,8 +98,6 @@ ${birthdayNote}
 
 REGRA DE TOM: ${humorGuide[humor] || ''}
 
-GÊNERO DA PESSOA: ${generoInstrucao}
-
 REGRAS ABSOLUTAS:
 - Tom SEMPRE positivo, acolhedor, leve, inspirador e agradável
 - JAMAIS mencione: ódio, morte, acidente, traição, rivalidade, perda, dor ou qualquer coisa negativa
@@ -148,7 +138,7 @@ Os 6 números da sorte devem ser únicos, entre 1 e 99.`;
     const payload = JSON.stringify({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1400,
+      max_tokens: 1200,
       temperature: 0.95,
     });
 
