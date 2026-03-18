@@ -1148,6 +1148,18 @@ function bindEvents() {
     });
   });
 
+  document.querySelectorAll('.genero-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      state.genero = pill.dataset.genero;
+      document.querySelectorAll('.genero-pill').forEach(p => p.classList.remove('on'));
+      pill.classList.remove('on');
+      pill.offsetWidth; // força reflow para replay da animação
+      pill.classList.add('on');
+      updateBtn();
+      if (navigator.vibrate) navigator.vibrate(40);
+    });
+  });
+
   const btnGerar = document.getElementById('btn-gerar');
   if (btnGerar) {
     btnGerar.addEventListener('click', generate);
@@ -1247,7 +1259,6 @@ function revelarCarta(pos) {
   state.cartasReveladas = [...state.cartasReveladas, pos];
   render();
 }
-
 
 function updateBtn() {
   const btn = document.getElementById('btn-gerar');
