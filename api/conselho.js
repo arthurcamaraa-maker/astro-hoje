@@ -125,10 +125,17 @@ Explore gêneros variados: pop, rock, soul, MPB, eletrônico, clássico, hip-hop
 Inclua artistas brasileiros e internacionais — varie entre os dois.
 Escolha obras amplamente conhecidas e fáceis de encontrar no streaming.
 
+REGRAS PARA O CONSELHO — muito importante:
+- Mencione o signo pelo nome em algum momento
+- Conecte o planeta regente (${sign.planeta}) ou o elemento (${sign.elemento}) diretamente ao estado emocional (${humor}) de forma poética e surpreendente
+- Evite frases genéricas e vazias como "confie em si mesmo", "o universo está ao seu lado", "você é capaz" — essas frases não dizem nada específico
+- A pessoa deve sentir que o conselho foi escrito exclusivamente para ela
+- Termine com uma orientação concreta e sensorial para o dia — algo que ela possa realmente fazer ou sentir
+
 Retorne SOMENTE um JSON válido, sem markdown, sem texto fora do JSON, com exatamente esta estrutura:
 {
-  "conselho": "Conselho do dia no formato sorteado acima. Máximo 2 frases curtas. Combine as características do signo e estado emocional. Seja específico e tocante.",
-  "frase": "Uma frase bonita e poética. Máximo 1 frase. Curta e memorável.",
+  "conselho": "Conselho no formato sorteado acima. 3-4 frases ricas, personalizadas e profundas. Use o signo, o planeta ${sign.planeta}, o elemento ${sign.elemento} e o humor ${humor} de forma específica e poética. Surpreenda — não escreva o óbvio.",
+  "frase": "Uma frase curta, original e memorável que capture a essência do conselho. Deve soar como algo que a pessoa vai querer salvar. Máximo 1 frase.",
   "numeros": [n1, n2, n3, n4, n5, n6],
   "filme": {
     "titulo": "Nome do filme",
@@ -148,7 +155,7 @@ Os 6 números da sorte devem ser únicos, entre 1 e 99.`;
     const payload = JSON.stringify({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 800,
+      max_tokens: 1200,
       temperature: 0.95,
     });
 
