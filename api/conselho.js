@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   };
 
   const birthdayNote = aniversario
-    ? `A data de aniversário é ${aniversario}. Use isso sutilmente para personalizar (ex: traços do dia do nascimento, estação do ano), mas sem cálculos astrológicos complexos.`
+    ? `A data de aniversário é ${aniversario}. Use isso sutilmente para personalizar, mas sem cálculos astrológicos complexos.`
     : '';
 
   const prompt = `Você é uma astrologa amorosa, sábia e inspiradora que cria mensagens do dia para pessoas com base em seu signo e humor.
@@ -72,34 +72,58 @@ A música deve ser famosa e amplamente conhecida.
 Ambos devem combinar com a energia de ${signo} + ${humor} — se o humor for triste, escolha filme e música alegres.`;
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 800,
-        temperature: 0.85,
-      }),
+    const https = require('https');
+
+    const payload = JSON.stringify({
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 800,
+      temperature: 0.85,
     });
 
-    const data = await response.json();
+    const result = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: 'api.openai.com',
+        path: '/v1/chat/completions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Length': Buffer.byteLength(payload),
+        },
+      };
 
-    if (!response.ok) {
-      console.error('OpenAI error:', data);
+      const request = https.request(options, (response) => {
+        let data = '';
+        response.on('data', (chunk) => { data += chunk; });
+        response.on('end', () => {
+          try {
+            resolve({ status: response.statusCode, body: JSON.parse(data) });
+          } catch (e) {
+            reject(new Error('Falha ao parsear resposta da OpenAI'));
+          }
+        });
+      });
+
+      request.on('error', reject);
+      request.write(payload);
+      request.end();
+    });
+
+    if (result.status !== 200) {
+      console.error('OpenAI error:', result.body);
       return res.status(500).json({ error: 'Erro ao consultar a IA' });
     }
 
-    const text = data.choices[0].message.content;
+    const text = result.body.choices[0].message.content;
     const clean = text.replace(/```json|```/g, '').trim();
-    const result = JSON.parse(clean);
+    const parsed = JSON.parse(clean);
 
-    return res.status(200).json(result);
+    return res.status(200).json(parsed);
   } catch (err) {
     console.error('Handler error:', err);
     return res.status(500).json({ error: 'Erro interno. Tente novamente.' });
   }
-}
+};
+
+module.exports = handler;
