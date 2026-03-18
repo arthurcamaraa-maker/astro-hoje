@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Astro Hoje — Seu dia nas estrelas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0E0B18;
+      --surface:  #15112A;
+      --card:     #1C1733;
+      --border:   rgba(255,255,255,0.08);
+      --accent:   #C9A96E;
+      --accent2:  #8B7CF6;
+      --text:     #EDE8DF;
+      --muted:    #8A849A;
+      --star:     #F0D080;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── STARFIELD ── */
+    .stars {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute; border-radius: 50%;
+      background: white; opacity: 0;
+      animation: twinkle var(--d) ease-in-out infinite var(--delay);
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0; transform: scale(0.5); }
+      50%      { opacity: var(--op); transform: scale(1); }
+    }
+
+    /* ── LAYOUT ── */
+    .app { position: relative; z-index: 1; min-height: 100vh; }
+
+    /* ── HEADER ── */
+    header {
+      padding: 28px 32px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      background: rgba(14,11,24,0.7);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 400; letter-spacing: 2px;
+      color: var(--accent);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-glyph {
+      font-size: 20px; opacity: 0.9;
+      animation: spinSlow 20s linear infinite;
+    }
+    @keyframes spinSlow { to { transform: rotate(360deg); } }
+    .header-tag {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); font-weight: 400;
+    }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 620px; width: 100%;
+      margin: 0 auto; padding: 56px 24px 100px;
+    }
+
+    /* ── HERO ── */
+    .hero { text-align: center; margin-bottom: 52px; }
+    .hero-eyebrow {
+      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 18px; opacity: 0.9;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 8vw, 58px);
+      font-weight: 300; line-height: 1.1; letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .hero-title em {
+      font-style: italic; color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 15px; font-weight: 300; color: var(--muted);
+      line-height: 1.6; max-width: 380px; margin: 0 auto;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      backdrop-filter: blur(8px);
+      margin-bottom: 16px;
+    }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      display: block;
+      font-size: 10px; font-weight: 500; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 9px;
+    }
+    .field-label .req { color: var(--accent); margin-left: 2px; }
+
+    select, input[type="date"], input[type="text"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px; font-weight: 300;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A849A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px; cursor: pointer;
+    }
+    select:focus, input:focus {
+      border-color: rgba(201,169,110,0.5);
+      box-shadow: 0 0 0 3px rgba(201,169,110,0.08);
+    }
+    select option { background: #1C1733; }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+    /* ── HUMOR PILLS ── */
+    .humor-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .humor-pill {
+      padding: 11px 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      text-align: center; user-select: none;
+      transition: all 0.18s;
+      background: var(--surface);
+    }
+    .humor-pill:hover { border-color: rgba(201,169,110,0.35); }
+    .humor-pill .emoji { font-size: 22px; display: block; margin-bottom: 4px; }
+    .humor-pill .label {
+      font-size: 11px; font-weight: 400; letter-spacing: 0.5px;
+      color: var(--muted); text-transform: lowercase;
+    }
+    .humor-pill.on {
+      background: rgba(201,169,110,0.1);
+      border-color: var(--accent);
+    }
+    .humor-pill.on .label { color: var(--accent); }
+
+    /* ── BUTTON ── */
+    .btn-gerar {
+      width: 100%; padding: 16px 24px;
+      background: linear-gradient(135deg, #C9A96E, #A07B45);
+      border: none; border-radius: 12px;
+      color: #0E0B18; font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 600; letter-spacing: 1.5px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-top: 28px;
+    }
+    .btn-gerar:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(201,169,110,0.25);
+    }
+    .btn-gerar:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── LOADING ── */
+    .loading {
+      text-align: center; padding: 72px 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    .moon-anim {
+      font-size: 52px;
+      display: block; margin: 0 auto 24px;
+      animation: moonPulse 1.5s ease-in-out infinite;
+    }
+    @keyframes moonPulse {
+      0%,100% { transform: scale(1); opacity: 0.7; }
+      50%      { transform: scale(1.12); opacity: 1; }
+    }
+    .loading-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px; font-weight: 300; color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .loading-sub { font-size: 13px; color: var(--muted); }
+
+    /* ── OUTPUT ── */
+    .output { animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    .out-top {
+      text-align: center; margin-bottom: 36px;
+    }
+    .out-signo-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.3);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+    }
+    .out-greeting {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 300; color: var(--text);
+      margin-bottom: 6px;
+    }
+    .out-date {
+      font-size: 12px; color: var(--muted); letter-spacing: 1px;
+    }
+
+    /* output cards */
+    .out-grid { display: flex; flex-direction: column; gap: 14px; }
+
+    .out-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px 28px;
+      position: relative; overflow: hidden;
+    }
+    .out-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--card-accent, transparent);
+    }
+    .out-card.gold::before  { background: linear-gradient(90deg, var(--accent), transparent); }
+    .out-card.violet::before { background: linear-gradient(90deg, var(--accent2), transparent); }
+    .out-card.teal::before  { background: linear-gradient(90deg, #5EC9B8, transparent); }
+    .out-card.rose::before  { background: linear-gradient(90deg, #E8829A, transparent); }
+
+    .card-label {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-label span { opacity: 0.6; }
+
+    .card-body {
+      font-size: 15px; font-weight: 300; line-height: 1.75; color: var(--text);
+    }
+
+    /* frase */
+    .frase-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 300; font-style: italic;
+      line-height: 1.5; color: var(--accent);
+    }
+
+    /* números */
+    .numbers {
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .num-ball {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid rgba(201,169,110,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 600; color: var(--accent);
+      animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;
+    }
+    .num-ball:nth-child(1) { animation-delay: 0.05s; }
+    .num-ball:nth-child(2) { animation-delay: 0.1s; }
+    .num-ball:nth-child(3) { animation-delay: 0.15s; }
+    .num-ball:nth-child(4) { animation-delay: 0.2s; }
+    .num-ball:nth-child(5) { animation-delay: 0.25s; }
+    .num-ball:nth-child(6) { animation-delay: 0.3s; }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    /* rec cards */
+    .rec-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px; font-weight: 400; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .rec-motivo {
+      font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.6;
+    }
+
+    /* whatsapp card */
+    .wa-card {
+      margin-top: 24px;
+      background: rgba(37,211,102,0.07);
+      border: 1px solid rgba(37,211,102,0.2);
+      border-radius: 16px;
+      padding: 24px 26px;
+    }
+    .wa-icon-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .wa-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(37,211,102,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .wa-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-weight: 400; color: var(--text); line-height: 1.3;
+    }
+    .wa-sub { font-size: 13px; font-weight: 300; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+
+    .wa-btn {
+      width: 100%; background: #25D366; border: none; border-radius: 10px;
+      padding: 14px 18px; color: #0E0B18;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+    }
+    .wa-btn:hover { background: #1EBE58; transform: translateY(-1px); }
+    .wa-terms { font-size: 11px; color: #4A4760; margin-top: 10px; line-height: 1.5; text-align: center; }
+
+    /* error */
+    .error-box {
+      background: rgba(232,52,52,0.08);
+      border: 1px solid rgba(232,52,52,0.2);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 14px; color: #E87070;
+      margin-bottom: 20px; text-align: center;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      main { padding: 36px 16px 80px; }
+      .form-card { padding: 24px 20px; }
+      .humor-grid { grid-template-columns: repeat(2, 1fr); }
+      .out-card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Starfield -->
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <header>
+    <div class="logo">
+      <span class="logo-glyph">✦</span>
+      Astro Hoje
+    </div>
+    <div class="header-tag">Guia das Estrelas</div>
+  </header>
+
+  <main id="main"></main>
+</div>
+
+<script>
+// ── GENERATE STARS ──
+(function() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 120; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      --d:${(Math.random()*4+2).toFixed(1)}s;
+      --delay:-${(Math.random()*6).toFixed(1)}s;
+      --op:${(Math.random()*0.7+0.15).toFixed(2)};
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── STATE ──
+const state = {
+  view: 'form', // 'form' | 'loading' | 'output'
+  signo: '',
+  aniversario: '',
+  humor: '',
+  output: null,
+  error: null,
+};
+
+// ── DATA ──
+const SIGNOS = [
+  { v:'Áries',       e:'♈', d:'21 Mar – 19 Abr' },
+  { v:'Touro',       e:'♉', d:'20 Abr – 20 Mai' },
+  { v:'Gêmeos',      e:'♊', d:'21 Mai – 20 Jun' },
+  { v:'Câncer',      e:'♋', d:'21 Jun – 22 Jul' },
+  { v:'Leão',        e:'♌', d:'23 Jul – 22 Ago' },
+  { v:'Virgem',      e:'♍', d:'23 Ago – 22 Set' },
+  { v:'Libra',       e:'♎', d:'23 Set – 22 Out' },
+  { v:'Escorpião',   e:'♏', d:'23 Out – 21 Nov' },
+  { v:'Sagitário',   e:'♐', d:'22 Nov – 21 Dez' },
+  { v:'Capricórnio', e:'♑', d:'22 Dez – 19 Jan' },
+  { v:'Aquário',     e:'♒', d:'20 Jan – 18 Fev' },
+  { v:'Peixes',      e:'♓', d:'19 Fev – 20 Mar' },
+];
+
+const HUMORES = [
+  { v:'triste',     e:'🌧', l:'Triste' },
+  { v:'feliz',      e:'☀️', l:'Feliz' },
+  { v:'ansiosa',    e:'🌀', l:'Ansiosa' },
+  { v:'animada',    e:'✨', l:'Animada' },
+  { v:'nervosa',    e:'⚡', l:'Nervosa' },
+  { v:'apaixonada', e:'🌹', l:'Apaixonada' },
+];
+
+// ── RENDER ──
+function render() {
+  const main = document.getElementById('main');
+  if (state.view === 'form')    main.innerHTML = renderForm();
+  if (state.view === 'loading') main.innerHTML = renderLoading();
+  if (state.view === 'output')  main.innerHTML = renderOutput();
+  bindEvents();
+}
+
+function renderForm() {
+  const signoOptions = SIGNOS.map(s =>
+    `<option value="${s.v}" ${state.signo === s.v ? 'selected' : ''}>${s.e} ${s.v} — ${s.d}</option>`
+  ).join('');
+
+  const humorPills = HUMORES.map(h =>
+    `<div class="humor-pill ${state.humor === h.v ? 'on' : ''}" data-humor="${h.v}">
+       <span class="emoji">${h.e}</span>
+       <span class="label">${h.l}</span>
+     </div>`
+  ).join('');
+
+  const canGo = state.signo && state.humor;
+
+  return `
+    <div class="hero">
+      <div class="hero-eyebrow">✦ &nbsp; seu guia astral diário &nbsp; ✦</div>
+      <h1 class="hero-title" style="font-family:'Great Vibes',cursive; font-weight:700; font-style:normal; font-size:clamp(44px,10vw,68px); letter-spacing:1px;">Conselho dos Astros</h1>
+      <p class="hero-sub">Informe seu signo e como você está se sentindo — as estrelas cuidam do resto.</p>
+    </div>
+
+    ${state.error ? `<div class="error-box">${state.error}</div>` : ''}
+
+    <div class="form-card">
+      <div class="field">
+        <label class="field-label">Seu signo <span class="req">*</span></label>
+        <select id="sel-signo">
+          <option value="">Selecione seu signo…</option>
+          ${signoOptions}
+        </select>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Data de aniversário <span style="color:var(--muted);font-size:9px;letter-spacing:1px"> — opcional</span></label>
+        <input type="date" id="inp-nasc" value="${state.aniversario}" placeholder="dd/mm/aaaa"/>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Seu humor de hoje <span class="req">*</span></label>
+        <div class="humor-grid">${humorPills}</div>
+      </div>
+
+      <button class="btn-gerar" id="btn-gerar" ${canGo ? '' : 'disabled'}>
+        ✦ &nbsp; Conselho do dia
+      </button>
+    </div>
+  `;
+}
+
+function renderLoading() {
+  const signo = SIGNOS.find(s => s.v === state.signo);
+  return `
+    <div class="loading">
+      <span class="moon-anim">${signo ? signo.e : '🌙'}</span>
+      <div class="loading-title">Consultando as estrelas…</div>
+      <div class="loading-sub">O universo está preparando sua mensagem</div>
+    </div>
+  `;
+}
+
+function renderOutput() {
+  const o = state.output;
+  const signo = SIGNOS.find(s => s.v === state.signo);
+  const humor = HUMORES.find(h => h.v === state.humor);
+  const hoje = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
+
+  const numBalls = (o.numeros || []).map(n =>
+    `<div class="num-ball">${n}</div>`
+  ).join('');
+
+  return `
+    <div class="output">
+      <div class="out-top">
+        <div class="out-signo-badge">${signo?.e || '✦'} &nbsp; ${state.signo} &nbsp; · &nbsp; ${humor?.e || ''} ${humor?.l || ''}</div>
+        <div class="out-greeting">Sua mensagem das estrelas</div>
+        <div class="out-date">${hoje.charAt(0).toUpperCase() + hoje.slice(1)}</div>
+      </div>
+
+      <div class="out-grid">
+
+        <!-- Conselho -->
+        <div class="out-card gold">
+          <div class="card-label"><span>✦</span> Conselho do dia</div>
+          <div class="card-body">${esc(o.conselho)}</div>
+        </div>
+
+        <!-- Frase -->
+        <div class="out-card" style="background:rgba(139,124,246,0.06); border-color:rgba(139,124,246,0.15)">
+          <div class="card-label"><span>◈</span> Frase do dia</div>
+          <div class="frase-text">"${esc(o.frase)}"</div>
+        </div>
+
+        <!-- Números -->
+        <div class="out-card teal">
+          <div class="card-label"><span>◉</span> Números da sorte</div>
+          <div class="numbers">${numBalls}</div>
+        </div>
+
+        <!-- Filme -->
+        <div class="out-card violet">
+          <div class="card-label"><span>▶</span> Filme do dia</div>
+          <div class="rec-title">🎬 &nbsp; ${esc(o.filme?.titulo || '')}</div>
+          <div class="rec-motivo">${esc(o.filme?.motivo || '')}</div>
+        </div>
+
+        <!-- Música -->
+        <div class="out-card rose">
+          <div class="card-label"><span>♫</span> Música do dia</div>
+          <div class="rec-title">🎵 &nbsp; ${esc(o.musica?.titulo || '')}</div>
+          <div class="rec-motivo">${esc(o.musica?.motivo || '')}</div>
+        </div>
+
+      </div>
+
+      <div class="wa-card">
+        <div class="wa-icon-row">
+          <div class="wa-icon">💬</div>
+          <div class="wa-title">Receba conselhos todos os dias direto no seu WhatsApp</div>
+        </div>
+        <div class="wa-sub">Clique abaixo para abrir o WhatsApp e confirmar seu cadastro com uma mensagem — gratuito, sem spam.</div>
+        <button class="wa-btn" id="btn-wa">💬 &nbsp; Abrir no WhatsApp</button>
+        <div class="wa-terms">Ao clicar, você será direcionado ao WhatsApp. Cancele quando quiser respondendo "sair".</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── BIND EVENTS ──
+function bindEvents() {
+  const selSigno = document.getElementById('sel-signo');
+  if (selSigno) {
+    selSigno.addEventListener('change', e => {
+      state.signo = e.target.value;
+      updateBtn();
+    });
+  }
+
+  const inpNasc = document.getElementById('inp-nasc');
+  if (inpNasc) {
+    inpNasc.addEventListener('change', e => { state.aniversario = e.target.value; });
+  }
+
+  document.querySelectorAll('.humor-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      state.humor = pill.dataset.humor;
+      document.querySelectorAll('.humor-pill').forEach(p => p.classList.remove('on'));
+      pill.classList.add('on');
+      updateBtn();
+    });
+  });
+
+  const btnGerar = document.getElementById('btn-gerar');
+  if (btnGerar) {
+    btnGerar.addEventListener('click', generate);
+  }
+
+  const btnWa = document.getElementById('btn-wa');
+  if (btnWa) {
+    btnWa.addEventListener('click', () => {
+      const seuNumero = 'SEU_NUMERO_AQUI'; // ex: 5511999998888
+      const msg = encodeURIComponent('Olá! Quero receber meu conselho astral todo dia ✦');
+      window.open('https://wa.me/' + seuNumero + '?text=' + msg, '_blank');
+    });
+  }
+}
+
+function updateBtn() {
+  const btn = document.getElementById('btn-gerar');
+  if (btn) btn.disabled = !(state.signo && state.humor);
+}
+
+// ── GENERATE ──
+async function generate() {
+  if (!state.signo || !state.humor) return;
+  state.view = 'loading'; state.error = null;
+  render();
+
+  try {
+    const res = await fetch('/api/conselho', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        signo: state.signo,
+        aniversario: state.aniversario || null,
+        humor: state.humor,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro desconhecido');
+
+    state.output = data;
+    state.view = 'output';
+  } catch (err) {
+    state.error = 'Algo saiu errado ao consultar as estrelas. Tente novamente ✨';
+    state.view = 'form';
+  }
+
+  render();
+  window.scrollTo(0, 0);
+}
+
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>
