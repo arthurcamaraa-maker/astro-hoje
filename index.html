@@ -95,6 +95,18 @@
     .hero-title em {
       font-style: italic; color: var(--accent);
     }
+    .title-shimmer {
+      background: linear-gradient(90deg, #C9A96E 0%, #F5E0A8 38%, #C9A96E 55%, #A07B45 100%);
+      background-size: 250% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite, titlePulse 3s ease-in-out infinite;
+    }
+    @keyframes shimmer { to { background-position: 250% center; } }
+    @keyframes titlePulse {
+      0%,100% { filter: drop-shadow(0 0 0px rgba(201,169,110,0)); }
+      50%      { filter: drop-shadow(0 0 16px rgba(201,169,110,0.35)); }
+    }
     .hero-sub {
       font-size: 15px; font-weight: 300; color: var(--muted);
       line-height: 1.6; max-width: 380px; margin: 0 auto;
@@ -146,6 +158,9 @@
     select option { background: #1C1733; }
     input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
 
+    /* ── BIRTHDAY ROW ── */
+    .birthday-row { display: grid; grid-template-columns: 1fr 2fr 1.4fr; gap: 8px; }
+
     /* ── HUMOR PILLS ── */
     .humor-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
@@ -167,8 +182,15 @@
     .humor-pill.on {
       background: rgba(201,169,110,0.1);
       border-color: var(--accent);
+      animation: pillBounce 0.35s cubic-bezier(0.36,0.07,0.19,0.97);
     }
     .humor-pill.on .label { color: var(--accent); }
+    @keyframes pillBounce {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.1); }
+      65%  { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
 
     /* ── BUTTON ── */
     .btn-gerar {
@@ -185,6 +207,7 @@
       transform: translateY(-2px);
       box-shadow: 0 12px 32px rgba(201,169,110,0.25);
     }
+    .btn-gerar:active:not(:disabled) { transform: scale(0.97); }
     .btn-gerar:disabled { opacity: 0.35; cursor: not-allowed; }
 
     /* ── LOADING ── */
@@ -229,6 +252,21 @@
     }
     .out-date {
       font-size: 12px; color: var(--muted); letter-spacing: 1px;
+    }
+
+    /* output cards — cascata de entrada */
+    .out-grid .out-card {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: cardReveal 0.5s ease forwards;
+    }
+    .out-grid .out-card:nth-child(1) { animation-delay: 0.05s; }
+    .out-grid .out-card:nth-child(2) { animation-delay: 0.18s; }
+    .out-grid .out-card:nth-child(3) { animation-delay: 0.31s; }
+    .out-grid .out-card:nth-child(4) { animation-delay: 0.44s; }
+    .out-grid .out-card:nth-child(5) { animation-delay: 0.57s; }
+    @keyframes cardReveal {
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* output cards */
@@ -280,17 +318,19 @@
       display: flex; align-items: center; justify-content: center;
       font-family: 'Cormorant Garamond', serif;
       font-size: 18px; font-weight: 600; color: var(--accent);
-      animation: popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275) both;
+      opacity: 0; transform: scale(0);
+      animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.4) forwards;
     }
-    .num-ball:nth-child(1) { animation-delay: 0.05s; }
-    .num-ball:nth-child(2) { animation-delay: 0.1s; }
-    .num-ball:nth-child(3) { animation-delay: 0.15s; }
-    .num-ball:nth-child(4) { animation-delay: 0.2s; }
-    .num-ball:nth-child(5) { animation-delay: 0.25s; }
-    .num-ball:nth-child(6) { animation-delay: 0.3s; }
+    .num-ball:nth-child(1) { animation-delay: 0.38s; }
+    .num-ball:nth-child(2) { animation-delay: 0.50s; }
+    .num-ball:nth-child(3) { animation-delay: 0.62s; }
+    .num-ball:nth-child(4) { animation-delay: 0.74s; }
+    .num-ball:nth-child(5) { animation-delay: 0.86s; }
+    .num-ball:nth-child(6) { animation-delay: 0.98s; }
     @keyframes popIn {
-      from { transform: scale(0); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
+      0%   { transform: scale(0);    opacity: 0; }
+      70%  { transform: scale(1.18); opacity: 1; }
+      100% { transform: scale(1);    opacity: 1; }
     }
 
     /* rec cards */
@@ -332,7 +372,52 @@
       cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
     }
     .wa-btn:hover { background: #1EBE58; transform: translateY(-1px); }
+    .wa-btn:active { transform: scale(0.97); opacity: 0.9; }
     .wa-terms { font-size: 11px; color: #4A4760; margin-top: 10px; line-height: 1.5; text-align: center; }
+
+    /* story button */
+    .btn-story {
+      width: 100%; margin-top: 14px; padding: 15px;
+      background: linear-gradient(135deg, #C9A96E, #A07B45);
+      border: none; border-radius: 12px;
+      color: #0E0B18; font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; font-weight: 600; letter-spacing: 1px;
+      cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-story:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,169,110,0.25); }
+    .btn-story:active { transform: scale(0.97); opacity: 0.9; }
+    .btn-story:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* story canvas — hidden offscreen */
+    #story-canvas-wrap {
+      position: fixed; left: -9999px; top: -9999px;
+      width: 405px; height: 720px;
+      background: linear-gradient(160deg, #0E0B18 0%, #1A1035 55%, #0E0B18 100%);
+      font-family: 'Cormorant Garamond', serif;
+      padding: 44px 52px 36px;
+      display: flex; flex-direction: column;
+      z-index: -1;
+    }
+    #story-canvas-wrap .sc-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+    #story-canvas-wrap .sc-logo { font-size: 14px; letter-spacing: 3px; color: rgba(201,169,110,0.55); }
+    #story-canvas-wrap .sc-date { font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.18); text-transform: uppercase; }
+    #story-canvas-wrap .sc-badge { display: flex; justify-content: center; margin-bottom: 30px; }
+    #story-canvas-wrap .sc-badge-inner { display: inline-flex; align-items: center; gap: 7px; background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.22); border-radius: 100px; padding: 5px 16px; font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(201,169,110,0.8); font-family: 'DM Sans', sans-serif; }
+    #story-canvas-wrap .sc-conselho { font-size: 22px; font-weight: 300; font-style: italic; line-height: 1.7; color: #EDE8DF; text-align: center; margin-bottom: 24px; }
+    #story-canvas-wrap .sc-frase { font-size: 16px; font-weight: 400; font-style: italic; color: #C9A96E; line-height: 1.65; text-align: center; margin-bottom: 32px; opacity: 0.9; }
+    #story-canvas-wrap .sc-rule { width: 36px; height: 1px; background: rgba(201,169,110,0.3); margin: 0 auto 26px; }
+    #story-canvas-wrap .sc-recs { display: flex; gap: 12px; margin-bottom: 28px; }
+    #story-canvas-wrap .sc-rec { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px 14px; }
+    #story-canvas-wrap .sc-rec-type { font-size: 10px; color: rgba(255,255,255,0.22); margin-bottom: 5px; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Sans', sans-serif; }
+    #story-canvas-wrap .sc-rec-val { font-size: 15px; font-weight: 400; color: rgba(237,232,223,0.85); line-height: 1.3; }
+    #story-canvas-wrap .sc-nums-section { margin-top: auto; }
+    #story-canvas-wrap .sc-nums-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.2); margin-bottom: 10px; text-align: center; font-family: 'DM Sans', sans-serif; }
+    #story-canvas-wrap .sc-nums { display: flex; gap: 8px; justify-content: center; }
+    #story-canvas-wrap .sc-num { width: 40px; height: 40px; border-radius: 50%; background: rgba(201,169,110,0.08); border: 1px solid rgba(201,169,110,0.2); display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #C9A96E; }
+    #story-canvas-wrap .sc-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); }
+    #story-canvas-wrap .sc-url { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.15); font-family: 'DM Sans', sans-serif; }
+    #story-canvas-wrap .sc-cta { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(201,169,110,0.45); font-family: 'DM Sans', sans-serif; }
 
     /* error */
     .error-box {
@@ -345,12 +430,23 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 480px) {
-      main { padding: 36px 16px 80px; }
-      .form-card { padding: 24px 20px; }
+      header { padding: 14px 18px; }
+      .header-tag { display: none; }
+      main { padding: 28px 16px 80px; }
+      .hero { margin-bottom: 32px; }
+      .hero-eyebrow { letter-spacing: 2px; }
+      .form-card { padding: 22px 18px; }
       .humor-grid { grid-template-columns: repeat(2, 1fr); }
-      .out-card { padding: 20px; }
+      .humor-pill { min-height: 52px; padding: 12px 8px; }
+      .out-card { padding: 18px 16px; }
+      .out-greeting { font-size: 22px; }
+      .frase-text { font-size: 18px; }
+      .card-label { letter-spacing: 2px; }
+      .wa-card { padding: 20px 18px; }
+      .wa-title { font-size: 16px; }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -373,7 +469,8 @@
 // ── GENERATE STARS ──
 (function() {
   const container = document.getElementById('stars');
-  for (let i = 0; i < 120; i++) {
+  const starCount = window.innerWidth < 480 ? 55 : 120;
+  for (let i = 0; i < starCount; i++) {
     const s = document.createElement('div');
     s.className = 'star';
     const size = Math.random() * 2.5 + 0.5;
@@ -392,7 +489,7 @@
 const state = {
   view: 'form', // 'form' | 'loading' | 'output'
   signo: '',
-  aniversario: '',
+  dia: '', mes: '', ano: '',
   humor: '',
   output: null,
   error: null,
@@ -449,7 +546,7 @@ function renderForm() {
   return `
     <div class="hero">
       <div class="hero-eyebrow">✦ &nbsp; seu guia astral diário &nbsp; ✦</div>
-      <h1 class="hero-title" style="font-family:'Great Vibes',cursive; font-weight:700; font-style:normal; font-size:clamp(44px,10vw,68px); letter-spacing:1px;">Conselho dos Astros</h1>
+      <h1 class="hero-title title-shimmer" style="font-family:'Great Vibes',cursive; font-weight:400; font-style:normal; font-size:clamp(52px,12vw,78px); letter-spacing:1px;">Conselho dos Astros</h1>
       <p class="hero-sub">Informe seu signo e como você está se sentindo — as estrelas cuidam do resto.</p>
     </div>
 
@@ -466,7 +563,20 @@ function renderForm() {
 
       <div class="field">
         <label class="field-label">Data de aniversário <span style="color:var(--muted);font-size:9px;letter-spacing:1px"> — opcional</span></label>
-        <input type="date" id="inp-nasc" value="${state.aniversario}" placeholder="dd/mm/aaaa"/>
+        <div class="birthday-row">
+          <select id="sel-dia">
+            <option value="">Dia</option>
+            ${Array.from({length:31},(_,i)=>`<option value="${i+1}" ${state.dia==i+1?'selected':''}>${i+1}</option>`).join('')}
+          </select>
+          <select id="sel-mes">
+            <option value="">Mês</option>
+            ${['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'].map((m,i)=>`<option value="${i+1}" ${state.mes==i+1?'selected':''}>${m}</option>`).join('')}
+          </select>
+          <select id="sel-ano">
+            <option value="">Ano</option>
+            ${Array.from({length:100},(_,i)=>{const y=new Date().getFullYear()-i; return `<option value="${y}" ${state.ano==y?'selected':''}>${y}</option>`;}).join('')}
+          </select>
+        </div>
       </div>
 
       <div class="field">
@@ -546,6 +656,8 @@ function renderOutput() {
 
       </div>
 
+      <button class="btn-story" id="btn-story">📲 &nbsp; Salvar imagem para stories</button>
+
       <div class="wa-card">
         <div class="wa-icon-row">
           <div class="wa-icon">💬</div>
@@ -569,17 +681,22 @@ function bindEvents() {
     });
   }
 
-  const inpNasc = document.getElementById('inp-nasc');
-  if (inpNasc) {
-    inpNasc.addEventListener('change', e => { state.aniversario = e.target.value; });
-  }
+  const selDia = document.getElementById('sel-dia');
+  const selMes = document.getElementById('sel-mes');
+  const selAno = document.getElementById('sel-ano');
+  if (selDia) selDia.addEventListener('change', e => { state.dia = e.target.value; });
+  if (selMes) selMes.addEventListener('change', e => { state.mes = e.target.value; });
+  if (selAno) selAno.addEventListener('change', e => { state.ano = e.target.value; });
 
   document.querySelectorAll('.humor-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       state.humor = pill.dataset.humor;
       document.querySelectorAll('.humor-pill').forEach(p => p.classList.remove('on'));
+      pill.classList.remove('on');
+      pill.offsetWidth; // força reflow para replay da animação
       pill.classList.add('on');
       updateBtn();
+      if (navigator.vibrate) navigator.vibrate(40);
     });
   });
 
@@ -591,10 +708,93 @@ function bindEvents() {
   const btnWa = document.getElementById('btn-wa');
   if (btnWa) {
     btnWa.addEventListener('click', () => {
-      const seuNumero = '5511940762121'; // ex: 5511999998888
+      const seuNumero = 'SEU_NUMERO_AQUI'; // ex: 5511999998888
       const msg = encodeURIComponent('Olá! Quero receber meu conselho astral todo dia ✦');
       window.open('https://wa.me/' + seuNumero + '?text=' + msg, '_blank');
     });
+  }
+
+  const btnStory = document.getElementById('btn-story');
+  if (btnStory) {
+    btnStory.addEventListener('click', () => downloadStory());
+  }
+}
+
+function buildStoryCanvas() {
+  const o = state.output;
+  const signo = SIGNOS.find(s => s.v === state.signo);
+  const humor = HUMORES.find(h => h.v === state.humor);
+  const hoje = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  const nums = (o.numeros || []).map(n => `<div class="sc-num">${n}</div>`).join('');
+
+  const wrap = document.getElementById('story-canvas-wrap');
+  wrap.innerHTML = `
+    <div class="sc-head">
+      <div class="sc-logo">✦ Astro Hoje</div>
+      <div class="sc-date">${hoje}</div>
+    </div>
+    <div class="sc-badge">
+      <div class="sc-badge-inner">${signo?.e || '✦'} ${state.signo} · ${humor?.e || ''} ${humor?.l || ''}</div>
+    </div>
+    <div class="sc-conselho">${esc(o.conselho)}</div>
+    <div class="sc-frase">"${esc(o.frase)}"</div>
+    <div class="sc-rule"></div>
+    <div class="sc-recs">
+      <div class="sc-rec">
+        <div class="sc-rec-type">🎬 filme</div>
+        <div class="sc-rec-val">${esc(o.filme?.titulo || '')}</div>
+      </div>
+      <div class="sc-rec">
+        <div class="sc-rec-type">🎵 música</div>
+        <div class="sc-rec-val">${esc(o.musica?.titulo || '')}</div>
+      </div>
+    </div>
+    <div class="sc-nums-section">
+      <div class="sc-nums-label">números da sorte</div>
+      <div class="sc-nums">${nums}</div>
+    </div>
+    <div class="sc-footer">
+      <div class="sc-url">astro-hoje.vercel.app</div>
+      <div class="sc-cta">consulte o seu ✦</div>
+    </div>
+  `;
+}
+
+async function downloadStory() {
+  const btn = document.getElementById('btn-story');
+  btn.disabled = true;
+  btn.textContent = 'Gerando imagem…';
+
+  buildStoryCanvas();
+  const wrap = document.getElementById('story-canvas-wrap');
+
+  await new Promise(r => setTimeout(r, 200));
+
+  try {
+    const canvas = await html2canvas(wrap, {
+      width: 405, height: 720,
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#0E0B18',
+      logging: false,
+    });
+
+    const link = document.createElement('a');
+    link.download = 'astro-hoje-story.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    btn.textContent = '✓ Imagem salva!';
+    btn.style.background = 'linear-gradient(135deg,#25D366,#1EBE58)';
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = '📲  Salvar imagem para stories';
+      btn.style.background = '';
+    }, 3000);
+  } catch (err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = '📲  Salvar imagem para stories';
   }
 }
 
@@ -615,7 +815,7 @@ async function generate() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         signo: state.signo,
-        aniversario: state.aniversario || null,
+        aniversario: (state.dia && state.mes && state.ano) ? `${state.dia}/${state.mes}/${state.ano}` : null,
         humor: state.humor,
       }),
     });
@@ -625,13 +825,14 @@ async function generate() {
 
     state.output = data;
     state.view = 'output';
+    if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
   } catch (err) {
     state.error = 'Algo saiu errado ao consultar as estrelas. Tente novamente ✨';
     state.view = 'form';
   }
 
   render();
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function esc(s) {
@@ -641,5 +842,6 @@ function esc(s) {
 // ── INIT ──
 render();
 </script>
+<div id="story-canvas-wrap"></div>
 </body>
 </html>
