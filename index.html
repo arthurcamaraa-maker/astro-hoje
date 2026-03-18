@@ -674,7 +674,79 @@
       .wa-card { padding: 20px 18px; }
       .wa-title { font-size: 16px; }
     }
-  </style>
+    /* ── PIX MODAL ── */
+    .pix-modal-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: rgba(14,11,24,0.85);
+      backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .pix-modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 360px; width: 100%;
+      text-align: center;
+    }
+    .pix-modal-titulo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; font-weight: 400;
+      color: var(--text); margin-bottom: 6px;
+    }
+    .pix-modal-sub {
+      font-size: 12px; color: var(--muted);
+      letter-spacing: 1px; text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .pix-qr-wrap {
+      background: #fff; border-radius: 12px;
+      padding: 12px; display: inline-block;
+      margin-bottom: 20px;
+    }
+    .pix-qr-wrap img { width: 180px; height: 180px; display: block; }
+    .pix-copia-cola-label {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .pix-copia-cola-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 11px; color: var(--muted);
+      word-break: break-all; text-align: left;
+      margin-bottom: 12px;
+      max-height: 64px; overflow: hidden;
+      position: relative;
+    }
+    .btn-copiar {
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #8B7CF6, #6C5CE7);
+      border: none; border-radius: 10px;
+      color: #fff; font-family: 'Cormorant Garamond', serif;
+      font-size: 16px; font-weight: 600; letter-spacing: 0.5px;
+      cursor: pointer; transition: all 0.2s;
+      margin-bottom: 10px;
+    }
+    .btn-copiar:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(139,124,246,0.35); }
+    .pix-status-msg {
+      font-size: 12px; color: var(--muted);
+      min-height: 20px; margin-bottom: 10px;
+    }
+    .pix-status-msg.aguardando { color: var(--accent); }
+    .pix-status-msg.aprovado   { color: #4caf88; font-weight: 500; }
+    .btn-fechar-pix {
+      background: transparent; border: none;
+      color: var(--muted); font-size: 12px;
+      cursor: pointer; letter-spacing: 1px;
+      text-transform: uppercase; padding: 4px;
+    }
+    .btn-fechar-pix:hover { color: var(--text); }
+  
 </head>
 <body>
 
@@ -1153,7 +1225,7 @@ function bindEvents() {
       state.genero = pill.dataset.genero;
       document.querySelectorAll('.genero-pill').forEach(p => p.classList.remove('on'));
       pill.classList.remove('on');
-      pill.offsetWidth; // força reflow para replay da animação
+      pill.offsetWidth;
       pill.classList.add('on');
       updateBtn();
       if (navigator.vibrate) navigator.vibrate(40);
@@ -1194,7 +1266,7 @@ function bindEvents() {
 
   const btnDesbloquear = document.getElementById('btn-desbloquear');
   if (btnDesbloquear) {
-    btnDesbloquear.addEventListener('click', () => simularDesbloqueio());
+    btnDesbloquear.addEventListener('click', () => abrirModalPix());
   }
 
   const btnTaro = document.getElementById('btn-taro');
@@ -1214,13 +1286,108 @@ function bindEvents() {
   }
 }
 
-function simularDesbloqueio() {
-  // TODO: integrar Pix via Mercado Pago
-  // Por ora, desbloqueia direto para testar o fluxo
-  state.taroDesbloqueado = true;
-  if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// ── PIX ──
+let _pixPollingInterval = null;
+
+async function abrirModalPix() {
+  // Cria modal de carregamento
+  const overlay = document.createElement('div');
+  overlay.className = 'pix-modal-overlay';
+  overlay.id = 'pix-modal-overlay';
+  overlay.innerHTML = `
+    <div class="pix-modal">
+      <div class="pix-modal-titulo">✦ Desbloquear Leitura</div>
+      <div class="pix-modal-sub">Leitura completa · R$ 1,99</div>
+      <div style="color:var(--muted);font-size:13px;padding:32px 0;">Gerando seu Pix…</div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  try {
+    const paymentRef = 'taro_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+
+    const res = await fetch('/api/pix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payment_id_ref: paymentRef }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao gerar Pix');
+
+    // Renderiza modal com QR Code
+    overlay.innerHTML = `
+      <div class="pix-modal">
+        <div class="pix-modal-titulo">✦ Pague via Pix</div>
+        <div class="pix-modal-sub">Leitura completa · R$ 1,99</div>
+        ${data.qr_code_base64
+          ? `<div class="pix-qr-wrap"><img src="data:image/png;base64,${data.qr_code_base64}" alt="QR Code Pix"/></div>`
+          : ''}
+        <div class="pix-copia-cola-label">Pix Copia e Cola</div>
+        <div class="pix-copia-cola-box" id="pix-codigo">${data.qr_code}</div>
+        <button class="btn-copiar" id="btn-copiar-pix">📋 &nbsp; Copiar código</button>
+        <div class="pix-status-msg aguardando" id="pix-status-msg">Aguardando pagamento…</div>
+        <button class="btn-fechar-pix" id="btn-fechar-pix">Cancelar</button>
+      </div>`;
+
+    // Copiar código
+    document.getElementById('btn-copiar-pix').addEventListener('click', () => {
+      navigator.clipboard.writeText(data.qr_code).then(() => {
+        const btn = document.getElementById('btn-copiar-pix');
+        btn.textContent = '✓  Copiado!';
+        setTimeout(() => { btn.innerHTML = '📋 &nbsp; Copiar código'; }, 2500);
+      });
+    });
+
+    // Fechar modal
+    document.getElementById('btn-fechar-pix').addEventListener('click', () => {
+      fecharModalPix();
+    });
+
+    // Polling de status
+    iniciarPollingPix(data.payment_id);
+
+  } catch (err) {
+    overlay.innerHTML = `
+      <div class="pix-modal">
+        <div class="pix-modal-titulo">Ops…</div>
+        <div style="color:var(--muted);font-size:13px;margin:16px 0;">${err.message}</div>
+        <button class="btn-fechar-pix" id="btn-fechar-pix">Fechar</button>
+      </div>`;
+    document.getElementById('btn-fechar-pix').addEventListener('click', fecharModalPix);
+  }
+}
+
+function fecharModalPix() {
+  clearInterval(_pixPollingInterval);
+  const overlay = document.getElementById('pix-modal-overlay');
+  if (overlay) overlay.remove();
+}
+
+function iniciarPollingPix(paymentId) {
+  clearInterval(_pixPollingInterval);
+  _pixPollingInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`/api/pix-status?payment_id=${paymentId}`);
+      const data = await res.json();
+
+      if (data.approved) {
+        clearInterval(_pixPollingInterval);
+        const statusMsg = document.getElementById('pix-status-msg');
+        if (statusMsg) {
+          statusMsg.textContent = '✓ Pagamento confirmado! Abrindo sua leitura…';
+          statusMsg.className = 'pix-status-msg aprovado';
+        }
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        setTimeout(() => {
+          fecharModalPix();
+          state.taroDesbloqueado = true;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1800);
+      }
+    } catch (e) {
+      // Silencioso — tenta novamente no próximo ciclo
+    }
+  }, 3000); // verifica a cada 3 segundos
 }
 
 async function iniciarTaro() {
