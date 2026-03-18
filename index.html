@@ -639,41 +639,6 @@
     .btn-pix:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(139,124,246,0.35); }
     .btn-pix:active { transform: scale(0.97); }
 
-    .btn-voltar-taro {
-      width: 100%; padding: 13px; margin-top: 8px;
-      background: transparent; border: 1px solid var(--border);
-      border-radius: 12px; color: var(--muted);
-      font-family: 'DM Sans', sans-serif; font-size: 13px;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .btn-voltar-taro:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
-
-    /* error */
-    .error-box {
-      background: rgba(232,52,52,0.08);
-      border: 1px solid rgba(232,52,52,0.2);
-      border-radius: 10px; padding: 14px 18px;
-      font-size: 14px; color: #E87070;
-      margin-bottom: 20px; text-align: center;
-    }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 480px) {
-      header { padding: 14px 18px; }
-      .header-tag { display: none; }
-      main { padding: 28px 16px 80px; }
-      .hero { margin-bottom: 32px; }
-      .hero-eyebrow { letter-spacing: 2px; }
-      .form-card { padding: 22px 18px; }
-      .humor-grid { grid-template-columns: repeat(2, 1fr); }
-      .humor-pill { min-height: 52px; padding: 12px 8px; }
-      .out-card { padding: 18px 16px; }
-      .out-greeting { font-size: 22px; }
-      .frase-text { font-size: 18px; }
-      .card-label { letter-spacing: 2px; }
-      .wa-card { padding: 20px 18px; }
-      .wa-title { font-size: 16px; }
-    }
     /* ── PIX MODAL ── */
     .pix-modal-overlay {
       position: fixed; inset: 0; z-index: 999;
@@ -721,7 +686,6 @@
       word-break: break-all; text-align: left;
       margin-bottom: 12px;
       max-height: 64px; overflow: hidden;
-      position: relative;
     }
     .btn-copiar {
       width: 100%; padding: 13px;
@@ -746,7 +710,43 @@
       text-transform: uppercase; padding: 4px;
     }
     .btn-fechar-pix:hover { color: var(--text); }
-  
+
+    .btn-voltar-taro {
+      width: 100%; padding: 13px; margin-top: 8px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 12px; color: var(--muted);
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-voltar-taro:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    /* error */
+    .error-box {
+      background: rgba(232,52,52,0.08);
+      border: 1px solid rgba(232,52,52,0.2);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 14px; color: #E87070;
+      margin-bottom: 20px; text-align: center;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 480px) {
+      header { padding: 14px 18px; }
+      .header-tag { display: none; }
+      main { padding: 28px 16px 80px; }
+      .hero { margin-bottom: 32px; }
+      .hero-eyebrow { letter-spacing: 2px; }
+      .form-card { padding: 22px 18px; }
+      .humor-grid { grid-template-columns: repeat(2, 1fr); }
+      .humor-pill { min-height: 52px; padding: 12px 8px; }
+      .out-card { padding: 18px 16px; }
+      .out-greeting { font-size: 22px; }
+      .frase-text { font-size: 18px; }
+      .card-label { letter-spacing: 2px; }
+      .wa-card { padding: 20px 18px; }
+      .wa-title { font-size: 16px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -1290,7 +1290,6 @@ function bindEvents() {
 let _pixPollingInterval = null;
 
 async function abrirModalPix() {
-  // Cria modal de carregamento
   const overlay = document.createElement('div');
   overlay.className = 'pix-modal-overlay';
   overlay.id = 'pix-modal-overlay';
@@ -1313,7 +1312,6 @@ async function abrirModalPix() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erro ao gerar Pix');
 
-    // Renderiza modal com QR Code
     overlay.innerHTML = `
       <div class="pix-modal">
         <div class="pix-modal-titulo">✦ Pague via Pix</div>
@@ -1328,7 +1326,6 @@ async function abrirModalPix() {
         <button class="btn-fechar-pix" id="btn-fechar-pix">Cancelar</button>
       </div>`;
 
-    // Copiar código
     document.getElementById('btn-copiar-pix').addEventListener('click', () => {
       navigator.clipboard.writeText(data.qr_code).then(() => {
         const btn = document.getElementById('btn-copiar-pix');
@@ -1337,12 +1334,8 @@ async function abrirModalPix() {
       });
     });
 
-    // Fechar modal
-    document.getElementById('btn-fechar-pix').addEventListener('click', () => {
-      fecharModalPix();
-    });
+    document.getElementById('btn-fechar-pix').addEventListener('click', () => fecharModalPix());
 
-    // Polling de status
     iniciarPollingPix(data.payment_id);
 
   } catch (err) {
@@ -1368,7 +1361,6 @@ function iniciarPollingPix(paymentId) {
     try {
       const res = await fetch(`/api/pix-status?payment_id=${paymentId}`);
       const data = await res.json();
-
       if (data.approved) {
         clearInterval(_pixPollingInterval);
         const statusMsg = document.getElementById('pix-status-msg');
@@ -1384,10 +1376,8 @@ function iniciarPollingPix(paymentId) {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 1800);
       }
-    } catch (e) {
-      // Silencioso — tenta novamente no próximo ciclo
-    }
-  }, 3000); // verifica a cada 3 segundos
+    } catch (e) { /* tenta novamente no próximo ciclo */ }
+  }, 3000);
 }
 
 async function iniciarTaro() {
