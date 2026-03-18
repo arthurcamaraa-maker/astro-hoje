@@ -127,8 +127,8 @@ Escolha obras amplamente conhecidas e fáceis de encontrar no streaming.
 
 Retorne SOMENTE um JSON válido, sem markdown, sem texto fora do JSON, com exatamente esta estrutura:
 {
-  "conselho": "Conselho do dia no formato sorteado acima. 2-3 frases. Combine as características do signo, planeta, elemento e estado emocional. Seja específico e tocante.",
-  "frase": "Uma frase bonita e poética baseada no conselho. Memorável, como uma citação que a pessoa vai querer guardar. Máximo 2 frases.",
+  "conselho": "Conselho do dia no formato sorteado acima. Máximo 2 frases curtas. Combine as características do signo e estado emocional. Seja específico e tocante.",
+  "frase": "Uma frase bonita e poética. Máximo 1 frase. Curta e memorável.",
   "numeros": [n1, n2, n3, n4, n5, n6],
   "filme": {
     "titulo": "Nome do filme",
@@ -148,7 +148,7 @@ Os 6 números da sorte devem ser únicos, entre 1 e 99.`;
     const payload = JSON.stringify({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1400,
+      max_tokens: 800,
       temperature: 0.95,
     });
 
