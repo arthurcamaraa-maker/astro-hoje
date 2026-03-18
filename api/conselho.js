@@ -9,20 +9,42 @@ const handler = async (req, res) => {
     return res.status(400).json({ error: 'Signo e humor são obrigatórios' });
   }
 
-  const signTraits = {
-    'Áries':       'corajoso, pioneiro, energético, impulsivo, líder natural',
-    'Touro':       'estável, sensual, persistente, amante do conforto e da beleza',
-    'Gêmeos':      'curioso, comunicativo, versátil, inteligente, sociável',
-    'Câncer':      'intuitivo, amoroso, protetor, sensível, familiado',
-    'Leão':        'confiante, criativo, generoso, carismático, apaixonado',
-    'Virgem':      'analítico, dedicado, cuidadoso, prático, perfeccionista',
-    'Libra':       'harmonioso, justo, diplomático, romântico, refinado',
-    'Escorpião':   'intenso, transformador, perspicaz, leal, profundo',
-    'Sagitário':   'aventureiro, otimista, filosófico, livre, expansivo',
-    'Capricórnio': 'ambicioso, disciplinado, responsável, determinado, confiável',
-    'Aquário':     'inovador, humanitário, original, independente, visionário',
-    'Peixes':      'empático, criativo, espiritual, sonhador, compassivo',
+  // ── Bloco 1: Era aleatória ──
+  const eras = [
+    'anos 80',
+    'anos 90',
+    'anos 2000',
+    'anos 2010',
+    'lançamento recente (2020 em diante)',
+  ];
+  const era = eras[Math.floor(Math.random() * eras.length)];
+
+  // ── Bloco 2: Formato do conselho sorteado ──
+  const formatos = [
+    'metáfora poética — use uma imagem bonita da natureza ou do cosmos para abrir o conselho',
+    'afirmação direta e poderosa — frases curtas, confiantes, que empoderam sem rodeios',
+    'pergunta reflexiva seguida de resposta acolhedora — convide a pessoa a olhar para dentro',
+    'imagem sensorial — descreva a energia do dia como se fosse uma cena, uma luz, uma textura',
+  ];
+  const formato = formatos[Math.floor(Math.random() * formatos.length)];
+
+  // ── Bloco 2: Traços expandidos por signo ──
+  const signData = {
+    'Áries':       { tracos: 'corajoso, pioneiro, energético, impulsivo, líder natural', planeta: 'Marte', elemento: 'Fogo', tema: 'identidade, ação, começos', sombra: 'impaciência, agir sem pensar' },
+    'Touro':       { tracos: 'estável, sensual, persistente, leal, amante do conforto', planeta: 'Vênus', elemento: 'Terra', tema: 'prazer, segurança, valores', sombra: 'teimosia, apego ao material' },
+    'Gêmeos':      { tracos: 'curioso, comunicativo, versátil, inteligente, sociável', planeta: 'Mercúrio', elemento: 'Ar', tema: 'conexão, aprendizado, troca', sombra: 'dispersão, superficialidade' },
+    'Câncer':      { tracos: 'intuitivo, amoroso, protetor, sensível, nutrido pelo lar', planeta: 'Lua', elemento: 'Água', tema: 'família, memória, cuidado', sombra: 'apego emocional, medo de abandono' },
+    'Leão':        { tracos: 'confiante, criativo, generoso, carismático, apaixonado', planeta: 'Sol', elemento: 'Fogo', tema: 'expressão, brilho, identidade', sombra: 'vaidade, necessidade de validação' },
+    'Virgem':      { tracos: 'analítico, dedicado, cuidadoso, prático, perfeccionista', planeta: 'Mercúrio', elemento: 'Terra', tema: 'serviço, melhoria, saúde', sombra: 'autocrítica excessiva, perfeccionismo' },
+    'Libra':       { tracos: 'harmonioso, justo, diplomático, romântico, refinado', planeta: 'Vênus', elemento: 'Ar', tema: 'relacionamentos, equilíbrio, beleza', sombra: 'indecisão, evitar conflitos' },
+    'Escorpião':   { tracos: 'intenso, transformador, perspicaz, leal, profundo', planeta: 'Plutão', elemento: 'Água', tema: 'transformação, poder, mistério', sombra: 'ciúme, controle, obsessão' },
+    'Sagitário':   { tracos: 'aventureiro, otimista, filosófico, livre, expansivo', planeta: 'Júpiter', elemento: 'Fogo', tema: 'liberdade, sabedoria, expansão', sombra: 'excesso, irresponsabilidade' },
+    'Capricórnio': { tracos: 'ambicioso, disciplinado, responsável, determinado, confiável', planeta: 'Saturno', elemento: 'Terra', tema: 'conquista, estrutura, legado', sombra: 'rigidez, workaholism' },
+    'Aquário':     { tracos: 'inovador, humanitário, original, independente, visionário', planeta: 'Urano', elemento: 'Ar', tema: 'coletivo, revolução, originalidade', sombra: 'frieza emocional, distanciamento' },
+    'Peixes':      { tracos: 'empático, criativo, espiritual, sonhador, compassivo', planeta: 'Netuno', elemento: 'Água', tema: 'espiritualidade, sonhos, dissolução', sombra: 'escapismo, dificuldade de limites' },
   };
+
+  const sign = signData[signo] || { tracos: 'único e especial', planeta: '—', elemento: '—', tema: '—', sombra: '—' };
 
   const humorGuide = {
     'triste':     'A pessoa está triste. Use tom reconfortante, acolhedor e encorajador. Ofereça um conselho que eleve a autoestima e traga leveza. O filme e a música devem ser alegres e reconfortantes, não tristes.',
@@ -33,14 +55,44 @@ const handler = async (req, res) => {
     'apaixonada': 'A pessoa está apaixonada! Celebre o amor e a conexão com um conselho romântico e bonito. Filme e música devem ser românticos e encantadores.',
   };
 
-  const birthdayNote = aniversario
-    ? `A data de aniversário é ${aniversario}. Use isso sutilmente para personalizar, mas sem cálculos astrológicos complexos.`
-    : '';
+  // ── Bloco 3: Personalização pelo aniversário ──
+  let birthdayNote = '';
+  if (aniversario) {
+    const parts = aniversario.split('/');
+    const dia = parseInt(parts[0]);
+    const mes = parseInt(parts[1]);
+    const ano = parseInt(parts[2]);
 
-  const prompt = `Você é uma astrologa amorosa, sábia e inspiradora que cria mensagens do dia para pessoas com base em seu signo e humor.
+    // Número pessoal — soma de todos os dígitos da data reduzida a 1 dígito
+    const somaDigitos = (n) => {
+      let s = String(n).split('').reduce((a, d) => a + parseInt(d), 0);
+      while (s > 9) s = String(s).split('').reduce((a, d) => a + parseInt(d), 0);
+      return s;
+    };
+    const numeroPessoal = somaDigitos(dia + mes + ano);
+
+    // Proximidade do aniversário — verifica se está nos próximos 7 dias
+    const hoje = new Date();
+    const proxAniv = new Date(hoje.getFullYear(), mes - 1, dia);
+    if (proxAniv < hoje) proxAniv.setFullYear(hoje.getFullYear() + 1);
+    const diasAteAniv = Math.ceil((proxAniv - hoje) / (1000 * 60 * 60 * 24));
+    const anivProximo = diasAteAniv <= 7;
+
+    birthdayNote = `
+Dados do aniversário (${aniversario}):
+- Número pessoal: ${numeroPessoal} — use este número sutilmente para enriquecer o conselho (ex: número ${numeroPessoal} ressoa com... ou a vibração do ${numeroPessoal}...).
+${anivProximo ? `- ATENÇÃO: o aniversário desta pessoa é em ${diasAteAniv === 0 ? 'hoje!' : `${diasAteAniv} dia(s)!`} Inclua uma menção acolhedora e celebratória a isso no conselho — algo especial e caloroso.` : ''}
+    `.trim();
+  }
+
+  const prompt = `Você é uma astróloga amorosa, sábia e inspiradora que cria mensagens do dia para pessoas com base em seu signo e humor.
 
 SIGNO: ${signo}
-Traços do signo: ${signTraits[signo] || 'cheio de qualidades únicas'}
+Traços: ${sign.tracos}
+Planeta regente: ${sign.planeta}
+Elemento: ${sign.elemento}
+Tema de vida: ${sign.tema}
+Sombra do signo (use com leveza, sem focar no negativo): ${sign.sombra}
 HUMOR DO DIA: ${humor}
 ${birthdayNote}
 
@@ -51,10 +103,22 @@ REGRAS ABSOLUTAS:
 - JAMAIS mencione: ódio, morte, acidente, traição, rivalidade, perda, dor ou qualquer coisa negativa
 - O resultado deve soar como um abraço caloroso
 
+FORMATO DO CONSELHO — use obrigatoriamente este estilo hoje:
+${formato}
+
+INSTRUÇÕES PARA FILME E MÚSICA:
+Antes de escolher o filme e a música, defina internamente (não inclua no JSON) uma palavra que represente a energia central do dia para ${signo} + ${humor}. Exemplos: esplendor, quietude, foco, leveza, encantamento, ousadia, acolhimento, expansão, brilho, ternura, impulso, fluidez.
+Use essa palavra como bússola para escolher obras que incarnem essa energia — não o óbvio e previsível para o signo.
+
+ERA OBRIGATÓRIA: o filme e a música devem ser da seguinte época: ${era}.
+Explore gêneros variados: pop, rock, soul, MPB, eletrônico, clássico, hip-hop, jazz, bossa nova, samba, funk, indie, R&B, world music.
+Inclua artistas brasileiros e internacionais — varie entre os dois.
+Escolha obras amplamente conhecidas e fáceis de encontrar no streaming.
+
 Retorne SOMENTE um JSON válido, sem markdown, sem texto fora do JSON, com exatamente esta estrutura:
 {
-  "conselho": "Um conselho do dia rico, pessoal e inspirador com 2-3 frases. Combine obrigatoriamente as características do signo com o estado emocional. Seja específico e tocante.",
-  "frase": "Uma frase bonita e poética baseada no conselho. Deve ser memorável, como uma citação que a pessoa vai querer guardar. Máximo 2 frases.",
+  "conselho": "Conselho do dia no formato sorteado acima. 2-3 frases. Combine as características do signo, planeta, elemento e estado emocional. Seja específico e tocante.",
+  "frase": "Uma frase bonita e poética baseada no conselho. Memorável, como uma citação que a pessoa vai querer guardar. Máximo 2 frases.",
   "numeros": [n1, n2, n3, n4, n5, n6],
   "filme": {
     "titulo": "Nome do filme",
@@ -66,10 +130,7 @@ Retorne SOMENTE um JSON válido, sem markdown, sem texto fora do JSON, com exata
   }
 }
 
-Os 6 números da sorte devem ser únicos, entre 1 e 99.
-O filme deve ser famoso e amplamente conhecido.
-A música deve ser famosa e amplamente conhecida.
-Ambos devem combinar com a energia de ${signo} + ${humor} — se o humor for triste, escolha filme e música alegres.`;
+Os 6 números da sorte devem ser únicos, entre 1 e 99.`;
 
   try {
     const https = require('https');
@@ -77,8 +138,8 @@ Ambos devem combinar com a energia de ${signo} + ${humor} — se o humor for tri
     const payload = JSON.stringify({
       model: 'gpt-4o',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 800,
-      temperature: 0.85,
+      max_tokens: 1200,
+      temperature: 0.95,
     });
 
     const result = await new Promise((resolve, reject) => {
